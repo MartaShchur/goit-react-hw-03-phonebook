@@ -1,10 +1,14 @@
 import React, { Component } from 'react';
 import { nanoid } from 'nanoid';
+import { saveLocalStorage, loadLocalStorage } from './localStorage';
+
 import { Container, Title, SubTitle, Wrapper } from './App.styled';
 import ContactForm from './ContactForm/ContactForm';
 import ContactList from './ContactList/ContactList';
 import Filter from './Filter/Filter';
 
+
+const LS_CONTACTS_KEY = 'contacts';
 
 export class App extends Component {
   state = {
@@ -17,21 +21,18 @@ export class App extends Component {
     filter: '',
   };
 
-
+  
   componentDidMount() {
-    const contacts = localStorage.getItem('contacts'); 
-    const parsedContacts = JSON.parse(contacts); 
+    const localStorageContacts = loadLocalStorage(LS_CONTACTS_KEY);
 
-    if (parsedContacts) {
-      this.setState({ contacts: parsedContacts }); 
-    }
+    if (localStorageContacts) this.setState({ contacts: localStorageContacts });
   }
 
   componentDidUpdate(_, prevState) {
-    if (this.state.contacts !== prevState.contacts) {
-      
-      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
-      
+    const { contacts } = this.state;
+
+    if (prevState.contacts !== contacts) {
+      saveLocalStorage(LS_CONTACTS_KEY, contacts);
     }
   }
 
